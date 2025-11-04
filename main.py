@@ -1,6 +1,5 @@
 import subprocess
 
-
 def run_git_command(args):
     result = subprocess.run(["git"] + args, capture_output=True, text=True)
     return result.stdout.strip()
@@ -15,8 +14,6 @@ def get_local_changes(only_new=False):
     for line in lines:
         if line.strip():
             status = line[:2].strip()
-            file_path = line[3:].strip()
-
             if only_new and status not in ['??', 'A']:
                 continue
 
@@ -27,6 +24,5 @@ def get_local_changes(only_new=False):
 
 
 if __name__ == "__main__":
-    get_local_changes()
-
-    get_local_changes(only_new=True)
+    get_local_changes(False)
+    get_local_changes(True)
