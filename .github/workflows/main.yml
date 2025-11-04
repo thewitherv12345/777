@@ -1,0 +1,63 @@
+name: Check Git Changes
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        # Здесь можно добавить pip install, если нужны дополнительные библии, но в вашем скрипте только subprocess, который встроен.
+
+    - name: Run Git Changes Check
+      run: |
+        python - <<EOF
+        import subprocess
+
+        def run_git_command(args):
+            result = subprocess.run(["git"] + args, capture_output=True, text=True)
+            return result.stdout.strip()
+
+        def get_local_changes(only_new=False):
+            output = run_git_command(["status", "--short"])
+
+            lines = output.split("\n")
+            print("Изменения:" if not only_new else "Новые файлы:")
+            changed_count = 0
+
+            for line in lines:
+                if line.strip():
+                    status = line[:2].strip()
+                    if only_new and status not in ['??', 'A']:
+                        continue
+
+                    print(line)
+                    changed_count += 1
+
+            print(f"Количество изменений: {changed_count}")
+            # Добавляем проверку: если есть изменения, фейлим билд
+            if changed_count > 0:
+                exit(1)  # Фейл, если есть изменения
+
+        if __name__ == "__main__":
+            get_local_changes(False)
+            get_local_changes(True)
+        EOF
+
+    - name: Fail if changes detected
+      if: failure()
+      run: echo "Обнаружены изменения в репозитории. Пожалуйста, закоммитьте их перед пушем."
