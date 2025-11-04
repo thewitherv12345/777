@@ -8,7 +8,7 @@ def get_local_changes(only_new=False):
     output = run_git_command(["status", "--short"])
 
     lines = output.split("\n")
-    print("Локальные изменения:" if not only_new else "Только новые локальные файлы:")
+    print("Изменения:" if not only_new else "Новые файлы:")
     changed_count = 0
 
     for line in lines:
@@ -20,7 +20,7 @@ def get_local_changes(only_new=False):
             print(line)
             changed_count += 1
 
-    print(f"Количество локальных изменений: {changed_count}")
+    print(f"Количество изменений: {changed_count}")
 
 
 if __name__ == "__main__":
