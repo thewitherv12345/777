@@ -1,11 +1,13 @@
 import subprocess
 import csv
 
+csv_filename="changes.csv"
+
 def run_git_command(args):
     result = subprocess.run(["git"] + args, capture_output=True, text=True)
     return result.stdout.strip()
 
-def get_local_changes(csv_filename="changes.csv"):
+def get_local_changes():
     output = run_git_command(["status", "--short"])
     lines = output.split("\n")
 
@@ -35,4 +37,4 @@ def get_local_changes(csv_filename="changes.csv"):
 
 
 if __name__ == "__main__":
-    get_local_changes(True)
+    get_local_changes()
